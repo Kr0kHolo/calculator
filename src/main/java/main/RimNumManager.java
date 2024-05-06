@@ -24,10 +24,13 @@ public class RimNumManager {
 
     public static boolean numIsRim(String sequence) {
         int checkSum = 0;
+        HashMap<Character, Long> symbCount = new HashMap<>();
         for (char rimSymbol : rimSymbols.keySet()) {
             if (sequence.lastIndexOf(rimSymbol) != -1) {
                 checkSum += numOfChars(sequence, rimSymbol);
             }
+            symbCount.put(rimSymbol, sequence.chars().filter(c->c==rimSymbol).count());
+            if (symbCount.get(rimSymbol) > 3) return false;
         }
 
         return checkSum == sequence.length();
@@ -46,7 +49,6 @@ public class RimNumManager {
     public static int rimToInt(String sequence){
         sequence = sequence.toUpperCase();
         int result = 0;
-        System.out.println(sequence);
         for(int i = 0; i < sequence.length(); i++){
             if (i+1 == sequence.length()) {result+=rimSymbols.get(sequence.charAt(i)); break;}
             if(rimSymbols.get(sequence.charAt(i)) >=  rimSymbols.get(sequence.charAt(i+1))){
@@ -56,7 +58,6 @@ public class RimNumManager {
                 i++;
             }
         }
-        System.out.println(result);
         return result;
     }
 
@@ -69,13 +70,15 @@ public class RimNumManager {
             if(isRepresentableWithTwo(num)) {result += representWithTwo(num); break;}
             result += ch.repeat(num/i);
             num %= i;
+            if(num==0) break;
+//            System.out.println(result);
         }
         return result;
     }
 
     private static boolean isRepresentableWithTwo(int num){
         for(char symbol : rimSymbols.keySet()){
-            if(num+1 == rimSymbols.get(symbol)){
+            if(num+1 == rimSymbols.get(symbol)||num+10 == rimSymbols.get(symbol)){
                 return true;
             }
         }
@@ -86,6 +89,9 @@ public class RimNumManager {
         for(char symbol : rimSymbols.keySet()){
             if(num+1 == rimSymbols.get(symbol)){
                 return "I"+symbol;
+            }
+            if(num+10 == rimSymbols.get(symbol)){
+                return "X"+symbol;
             }
         }
         return null;
